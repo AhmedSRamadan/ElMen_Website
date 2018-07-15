@@ -1,0 +1,40 @@
+version: '3'
+services:
+
+  # Create mongodb instance
+  mongo:
+    image: mongo
+    volumes:
+      - /var/mongo/data:/data/db
+
+  # Create NodeAPI application
+  nodeapi1:
+    build: ./NodeAPI/
+    depends_on:
+      - mongo
+
+  nodeapi2:
+    build: ./NodeAPI/
+    depends_on:
+      - mongo
+
+  # Create HAproxy
+  haproxy:
+    image: haproxy
+    volumes:
+      - ./haproxy/conf:/usr/local/etc/haproxy
+    depends_on:
+      - nodeapi1
+      - nodeapi2
+
+  # Create nginx contaner
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/
+    depends_on:
+      - haproxy
+    ports:
+      - 80:80
+
+

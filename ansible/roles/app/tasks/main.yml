@@ -1,0 +1,9 @@
+---
+# tasks file for app
+- name: start up the application
+  command: "docker-compose up -d"
+  args:
+    chdir: "/vagrant/app/"
+- name: install jq
+  apt:
+    name: jq

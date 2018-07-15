@@ -1,0 +1,20 @@
+- hosts: dock
+  remote_user: vagrant
+  become: yes
+  roles:
+    - docker
+    - docker-compose
+    - app
+  post_tasks:
+    - name: check if docker-compose is installed
+      shell: "docker-compose --version"
+      register: result
+      failed_when: "'docker-compose' not in result.stdout"
+    - name: Test if docker service is present and running
+      shell: "service docker status"
+      register: result
+      failed_when: "'active (running)' not in result.stdout"
+    - name: check if the application is installed correctly
+      shell: "/bin/bash /vagrant/test.sh"
+      register: result
+      failed_when: "'installed successfully' not in result.stdout"
